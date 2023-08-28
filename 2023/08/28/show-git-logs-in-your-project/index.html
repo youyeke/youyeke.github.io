@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="无用的前言“你刷新一下页面” “清空一下浏览器缓存再试试看” “肯定是别的前端部署了别的分支，我重新触发一下构建” 这算得上是我前端与测试之间的日常了。特别是已经修复好的问题再次出现，好家伙明明我刚刚&#x2F;上午&#x2F;昨天&#x2F;上周就把这个 bug 修好了的！ 为了解决这个问题，我决定给每次版本部署的时候加上点标记，最好就是直接打印出git最后提交的信息。 获取提交信息首先，需要知">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在项目里显示最后一次的 git log 提交信息">
+<meta property="og:url" content="http://example.com/2023/08/28/show-git-logs-in-your-project/index.html">
+<meta property="og:site_name" content="游夜客">
+<meta property="og:description" content="无用的前言“你刷新一下页面” “清空一下浏览器缓存再试试看” “肯定是别的前端部署了别的分支，我重新触发一下构建” 这算得上是我前端与测试之间的日常了。特别是已经修复好的问题再次出现，好家伙明明我刚刚&#x2F;上午&#x2F;昨天&#x2F;上周就把这个 bug 修好了的！ 为了解决这个问题，我决定给每次版本部署的时候加上点标记，最好就是直接打印出git最后提交的信息。 获取提交信息首先，需要知">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-28T11:03:41.000Z">
+<meta property="article:modified_time" content="2023-08-28T11:04:23.540Z">
+<meta property="article:author" content="youyeke">
+<meta property="article:tag" content="vue">
+<meta property="article:tag" content="git">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/08/28/show-git-logs-in-your-project/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>在项目里显示最后一次的 git log 提交信息 | 游夜客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">游夜客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">简单分享一下前端开发知识</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/28/show-git-logs-in-your-project/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="youyeke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="游夜客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在项目里显示最后一次的 git log 提交信息
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-08-28 19:03:41 / 修改时间：19:04:23" itemprop="dateCreated datePublished" datetime="2023-08-28T19:03:41+08:00">2023-08-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="无用的前言"><a href="#无用的前言" class="headerlink" title="无用的前言"></a>无用的前言</h1><p>“你刷新一下页面”</p>
+<p>“清空一下浏览器缓存再试试看”</p>
+<p>“肯定是别的前端部署了别的分支，我重新触发一下构建”</p>
+<p>这算得上是我前端与测试之间的日常了。特别是已经修复好的问题再次出现，好家伙明明我刚刚&#x2F;上午&#x2F;昨天&#x2F;上周就把这个 bug 修好了的！</p>
+<p>为了解决这个问题，我决定给每次版本部署的时候加上点标记，最好就是直接打印出<code>git</code>最后提交的信息。</p>
+<h1 id="获取提交信息"><a href="#获取提交信息" class="headerlink" title="获取提交信息"></a>获取提交信息</h1><p>首先，需要知道最后一次的提交信息。参看一下<code>git log</code>的文档，很容易就能知道：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git log -1 --pretty=format:&quot;[%h] &lt;%cr&gt; %s&quot;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>-1</code>表示只显示一行，<code>%h``cr``%s</code>则分别是格式化输出提交的哈希、相对时间、提交信息。输出结果类似于这样：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -1 --pretty=format:<span class="string">&quot;[%h] &lt;%cr&gt; %s&quot;</span></span></span><br><span class="line">[5e12e34] &lt;2 hours ago&gt; 修复了程序运行过于流畅的问题</span><br></pre></td></tr></table></figure>
+
+<h1 id="将提交信息写入网站程序"><a href="#将提交信息写入网站程序" class="headerlink" title="将提交信息写入网站程序"></a>将提交信息写入网站程序</h1><p>最开始，我是打算将<code>git log</code>作为一个 js 文件输出到静态资源目录下，然后在<code>index.html</code>里引用。</p>
+<p>类似于这样：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出最后一次的提交信息到静态资源目录下作为一个 js 文件</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git <span class="built_in">log</span> -1 --pretty=format:<span class="string">&quot;[%h] &lt;%cr&gt; %s&quot;</span> &gt; ./public/myTest.js</span></span><br></pre></td></tr></table></figure>
+
+<p>然后在 HTML 模版文件里引用这个 js 文件</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;app&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;&lt;%= BASE_URL %&gt;myTest.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>但这样有一些问题。</p>
+<p>首先，这样输出的文件很容易被浏览器缓存。而一但被缓存，那么就失去了这篇文章开头的意义。</p>
+<p>如果想要在每次打包构建的时候为这个 js 文件加上时间戳的话，那估计还得引入<code>webpack</code>的 html 插件。</p>
+<p>如果想要通过自己写一个正则来匹配的话，估计得写一个比较复杂的<code>shell</code>脚本。因为这毕竟不是<code>gulp</code>那样的流式构建，不能直接写<br>最熟悉的 js 代码来完成这一步。</p>
+<p>再者，这样也不方便应用到其它的前端项目里面去——其它前端项目里打包构建用的是<code>vite</code>。</p>
+<p>所以，得另想办法。</p>
+<h2 id="输出到环境变量"><a href="#输出到环境变量" class="headerlink" title="输出到环境变量"></a>输出到环境变量</h2><p>废话不多说，最简单侵害性最小的方法还得是写入环境变量。</p>
+<p>编写一个简单的<code>shell</code>文件<code>before.sh</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/usr/bin/env sh</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将最后的 git 提交基础信息记录在项目环境变量</span></span><br><span class="line">git log -1 --pretty=format:&quot;VUE_APP_COMMIT=[%h] &lt;%cr&gt; %s&quot; &gt; ./.env.local</span><br></pre></td></tr></table></figure>
+
+<p>修改<code>package.json</code>，让它在运行打包命令的之前先运行这个<code>shell</code>文件:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="string">&quot;scripts&quot;</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;build&quot;</span><span class="punctuation">:</span> <span class="string">&quot;sh ./before.sh &amp;&amp; vue-cli-service build&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>最后，在<code>vue</code>的入口文件里（一般是 main.js）加上这样的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (process.<span class="property">env</span>.<span class="property">VUE_APP_COMMIT</span>) &#123;</span><br><span class="line">  <span class="comment">// 将环境变量注入到全局变量 COMMIT 里</span></span><br><span class="line">  <span class="variable language_">window</span>.<span class="property">COMMIT</span> = process.<span class="property">env</span>.<span class="property">VUE_APP_COMMIT</span></span><br><span class="line">  <span class="keyword">if</span> (process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;staging&#x27;</span>) &#123;</span><br><span class="line">    <span class="comment">// 在测试环境直接显示出来，方便测试人员直接看到</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;部署版本:&#x27;</span>, <span class="variable language_">window</span>.<span class="property">COMMIT</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就大功告成了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/vue/" rel="tag"># vue</a>
+              <a href="/tags/git/" rel="tag"># git</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/13/remirror-react-firstTimeUse/" rel="prev" title="remirror-react 初次使用">
+      <i class="fa fa-chevron-left"></i> remirror-react 初次使用
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A0%E7%94%A8%E7%9A%84%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">无用的前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%8F%90%E4%BA%A4%E4%BF%A1%E6%81%AF"><span class="nav-number">2.</span> <span class="nav-text">获取提交信息</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%86%E6%8F%90%E4%BA%A4%E4%BF%A1%E6%81%AF%E5%86%99%E5%85%A5%E7%BD%91%E7%AB%99%E7%A8%8B%E5%BA%8F"><span class="nav-number">3.</span> <span class="nav-text">将提交信息写入网站程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E5%88%B0%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">3.1.</span> <span class="nav-text">输出到环境变量</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="youyeke"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">youyeke</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/youyeke" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;youyeke" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">youyeke</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'b17ff7e70c6ec36ab871',
+      clientSecret: 'bde0ac64709567b17510b23861a2b789d7af39fd',
+      repo        : 'youyeke.github.io',
+      owner       : 'youyeke',
+      admin       : [''],
+      id          : '49883e498880943b1244484c4a2ac7ba',
+        language: 'zh-CN',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
