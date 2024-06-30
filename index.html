@@ -153,6 +153,99 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/06/30/list-concurrent-dict-react/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="youyeke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="游夜客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/06/30/list-concurrent-dict-react/" class="post-title-link" itemprop="url">复杂后台系统里字典映射方案</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-06-30 10:58:45 / 修改时间：13:15:22" itemprop="dateCreated datePublished" datetime="2024-06-30T10:58:45+08:00">2024-06-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="无用的前言"><a href="#无用的前言" class="headerlink" title="无用的前言"></a>无用的前言</h1><p>在后台管理系统里有这么一个经典场景：一些字段在接口里返回的是<code>number</code>类型，需要前端通过某些方式映射为中文显示。</p>
+<p>关于这种场景，可以参考下边的简单示例代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&quot;react&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">ListAndDict</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [listData] = <span class="title function_">useState</span>(<span class="function">() =&gt;</span> <span class="keyword">new</span> <span class="title class_">Array</span>(<span class="number">10</span>).<span class="title function_">fill</span>(<span class="number">0</span>).<span class="title function_">map</span>(<span class="function">(<span class="params">_, i</span>) =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">id</span>: i,</span><br><span class="line">    <span class="attr">title</span>: <span class="string">`列表数据<span class="subst">$&#123;i + <span class="number">1</span>&#125;</span>`</span>,</span><br><span class="line">    <span class="comment">/** 状态是`number`，需要从字典获取数据并映射成中文 */</span></span><br><span class="line">    <span class="attr">status</span>: i % <span class="number">2</span></span><br><span class="line">  &#125;)))</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">table</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">thead</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>Status<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;listData.map(item =&gt; &#123;</span></span><br><span class="line"><span class="language-xml">        return <span class="tag">&lt;<span class="name">tr</span> <span class="attr">key</span>=<span class="string">&#123;item.id&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;item.title&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;item.status&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#125;)&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本文列举一些这种场景的解决方案，并简单分析各个方法的优劣。</p>
+<h1 id="前端硬编码"><a href="#前端硬编码" class="headerlink" title="前端硬编码"></a>前端硬编码</h1><p>最基础的解决方案。</p>
+<p>在前端的某个地方将映射关系写进代码里：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> statusMap = &#123;</span><br><span class="line">  <span class="number">0</span>: <span class="string">&#x27;禁用&#x27;</span>,</span><br><span class="line">  <span class="number">1</span>: <span class="string">&#x27;启用&#x27;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在需要映射的时候使用刚刚定义好的映射关系：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;tbody&gt;</span><br><span class="line">  &#123;listData.<span class="title function_">map</span>(<span class="function"><span class="params">item</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">tr</span> <span class="attr">key</span>=<span class="string">&#123;item.id&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;item.title&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;/* 使用 statusMap 来映射数字对应的中文 */&#125;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;statusMap[item.status] || &#x27;-&#x27;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span></span><br><span class="line">  &#125;)&#125;</span><br><span class="line">&lt;/tbody&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这种方案最大的优点就是简单、直接、快。</p>
+<p>缺点也很明显，硬编码带来的灵活性不足。</p>
+<h1 id="通过字典接口获取映射关系"><a href="#通过字典接口获取映射关系" class="headerlink" title="通过字典接口获取映射关系"></a>通过字典接口获取映射关系</h1><p>在一些稍微复杂一些的表格里，映射关系将通过字典接口来获取。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useEffect, useState &#125; <span class="keyword">from</span> <span class="string">&quot;react&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** 这里模拟字典接口 */</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getDictMock</span>(<span class="params"></span>): <span class="title class_">Promise</span>&lt;&#123;</span><br><span class="line">  <span class="attr">code</span>: number</span><br><span class="line">  <span class="attr">msg</span>: string</span><br><span class="line">  <span class="attr">data</span>: &#123; <span class="attr">key</span>: number, <span class="attr">value</span>: string &#125;[]</span><br><span class="line">&#125;&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Promise</span>(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">res</span>(&#123;</span><br><span class="line">        <span class="attr">code</span>: <span class="number">200</span>,</span><br><span class="line">        <span class="attr">msg</span>: <span class="string">&#x27;请求成功&#x27;</span>,</span><br><span class="line">        <span class="attr">data</span>: [</span><br><span class="line">          &#123; <span class="attr">key</span>: <span class="number">0</span>, <span class="attr">value</span>: <span class="string">&#x27;禁用&#x27;</span> &#125;,</span><br><span class="line">          &#123; <span class="attr">key</span>: <span class="number">1</span>, <span class="attr">value</span>: <span class="string">&#x27;启用&#x27;</span> &#125;,</span><br><span class="line">        ]</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">ListAndDict</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [listData] = <span class="title function_">useState</span>(<span class="function">() =&gt;</span> <span class="keyword">new</span> <span class="title class_">Array</span>(<span class="number">10</span>).<span class="title function_">fill</span>(<span class="number">0</span>).<span class="title function_">map</span>(<span class="function">(<span class="params">_, i</span>) =&gt;</span> (&#123;</span><br><span class="line">    <span class="attr">id</span>: i,</span><br><span class="line">    <span class="attr">title</span>: <span class="string">`列表数据<span class="subst">$&#123;i + <span class="number">1</span>&#125;</span>`</span>,</span><br><span class="line">    <span class="comment">/** 状态是`number`，需要从字典获取数据并映射成中文 */</span></span><br><span class="line">    <span class="attr">status</span>: i % <span class="number">2</span></span><br><span class="line">  &#125;)))</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> [dict, setDict] = useState&lt;<span class="title class_">Record</span>&lt;string, string&gt;&gt;(&#123;&#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">getDictMock</span>().<span class="title function_">then</span>(<span class="function"><span class="params">response</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (response.<span class="property">code</span> === <span class="number">200</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> dictEntries = response.<span class="property">data</span>.<span class="title function_">entries</span>()</span><br><span class="line">        <span class="keyword">const</span> resultDict = &#123;&#125; <span class="keyword">as</span> <span class="title class_">Record</span>&lt;string, string&gt;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/** 对接口获取到的数据格式化成直接的键值对 */</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">const</span> [_, dictItem] <span class="keyword">of</span> dictEntries) &#123;</span><br><span class="line">          resultDict[dictItem.<span class="property">key</span>] = dictItem.<span class="property">value</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title function_">setDict</span>(resultDict)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;, [])</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="language-xml"><span class="tag">&lt;<span class="name">table</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">thead</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>Title<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">th</span>&gt;</span>Status<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">thead</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;<span class="name">tbody</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;listData.map(item =&gt; &#123;</span></span><br><span class="line"><span class="language-xml">        return <span class="tag">&lt;<span class="name">tr</span> <span class="attr">key</span>=<span class="string">&#123;item.id&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;item.title&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">          &#123;/* 同样的，这边通过 dict 来完成映射 */&#125;</span></span><br><span class="line"><span class="language-xml">          <span class="tag">&lt;<span class="name">td</span>&gt;</span>&#123;dict[item.status] || &#x27;-&#x27;&#125;<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#125;)&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">tbody</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">  <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如上所示的代码。我通过<code>useEffect</code>来模拟页面挂载后的生命周期，然后请求接口并处理好了字典数据。</p>
+<p>实际项目中，获取到的字典数据可能会被保存在类似<code>Redux</code>这样的状态管理库中，接口的请求时机也可能用别的方式。但是道理都是一样的，对于前端而言都是自上而下的数据处理方式。</p>
+<p>这作为一种比较通用的解决方案来说，显然有不错的优点：</p>
+<ul>
+<li>映射文案与前端解耦。意味着可以在不重新部署代码的情况下通过运维手段来对映射文案进行替换。</li>
+<li>字典模式可以支撑一些复杂业务。例如可以当作<code>tag</code>系统，用户可以在业务流程里往字典数据做增删改。</li>
+</ul>
+<p>但是对于前端来说，上面的优点可以看作是缺点。</p>
+<ul>
+<li>字典不单单只在表格数据里用到，如果表格有搜索的下拉框的话，显然它也需要字典数据。这意味着前端需要做<code>状态提升</code>。</li>
+<li>在复杂场景里，前端的这种处理方式会让代码难以组织。</li>
+</ul>
+<p>举个例子，如果你的用户系统作为一个基础服务，并为不同租户提供使用的话：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">getDictMock</span>(<span class="string">&#x27;user_status&#x27;</span>)</span><br><span class="line">  <span class="keyword">if</span> (是商家租户) &#123;</span><br><span class="line">    <span class="title function_">getDictMock</span>(<span class="string">&#x27;获取用户的积分会员等级：青铜会员/白银会员/黄金会员&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (是学校租户) &#123;</span><br><span class="line">    <span class="title function_">getDictMock</span>(<span class="string">&#x27;获取用户的放学回家方式：父母接送/学校大巴/留校住宿&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (是超级管理员) &#123;</span><br><span class="line">    <span class="title function_">getDictMock</span>(<span class="string">&#x27;获取用户数据是否被逻辑删除&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;, [])</span><br></pre></td></tr></table></figure>
+<p>如上，单单是获取字段数据，配合一些业务逻辑就已经让代码变得难以组织了：你还需要将这种判断逻辑用于渲染字典的地方(搜索框、详情)。</p>
+<p>再或是，在上面的基础上，如果表格的字段是可以被用户自定义显示隐藏的。在用户隐藏字段的时候不要去获取字典，在用户显示字段的时候再去获取字典。也就是说——字典的获取还应该是实时的。</p>
+<p>就这样随着系统功能迭代，字典的获取被业务逻辑劫持，与各种功能模块耦合。</p>
+<h1 id="自下而上的字典获取方案"><a href="#自下而上的字典获取方案" class="headerlink" title="自下而上的字典获取方案"></a>自下而上的字典获取方案</h1><p>为了解决上面的问题，本章节将采用自下而上的思路，将<code>数据获取与渲染控制</code>的问题，简化为<code>渲染控制</code>问题。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2023/08/28/show-git-logs-in-your-project/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -415,14 +508,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
