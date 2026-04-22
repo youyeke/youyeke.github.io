@@ -153,6 +153,91 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2026/04/22/Strix-Halo-and-Ubuntu-26-04-beta/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="youyeke">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="游夜客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2026/04/22/Strix-Halo-and-Ubuntu-26-04-beta/" class="post-title-link" itemprop="url">Strix Halo and Ubuntu 26.04 beta</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2026-04-22 18:33:52 / 修改时间：16:35:03" itemprop="dateCreated datePublished" datetime="2026-04-22T18:33:52+08:00">2026-04-22</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="无用的前言"><a href="#无用的前言" class="headerlink" title="无用的前言"></a>无用的前言</h1><p>最近，购入了一台 AMD AI Max+ 395 128G 的迷你主机，并且当作主力电脑使用了近一个月，大致真理一下使用的心得（折腾记录）。</p>
+<h2 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h2><p>准备一个 Ventoy 系统的 U盘，分别放入 win11 和 Ubuntu 的镜像。<br>首先，先给电脑装了 win 11，再安装了 <code>Ubuntu 26.04 beta</code>。<br>双系统的目的是为了万一有不兼容的紧急场景，可以及时回退到 win 11 来保底。实际上近一个月的使用，我暂时没有碰到这样的紧急情况。<br>因为我自己还有台 NAS，常规的资料可以通过 NFS 挂载到迷你主机上。所以这台迷你主机我使用的是 2T 的固态硬盘，分区是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">500G --- win 11</span><br><span class="line">200G --- Ubuntu 根目录`/`</span><br><span class="line">1.2T --- 剩下的空间分配到 Ubuntu 家目录`/home`</span><br></pre></td></tr></table></figure>
+<p>我必须说一下，我第一次装 Ubuntu 26 的时候，没有单独划分 家目录<code>/home</code> 的空间，而是将剩下的 1.4T 全部丢 根目录<code>/</code>。<br>后续我重装 Ubuntu 系统的时候只能被迫清空我放在 家目录<code>/home</code> 下的AI模型😟。<br>所以，这次我学乖了，分出来 200G 到根目录。并且，装了 TimeShift 来做系统的还原（排除 &#x2F;home 目录）。</p>
+<h2 id="远程控制"><a href="#远程控制" class="headerlink" title="远程控制"></a>远程控制</h2><p>必不可少的远程控制。<br>遗憾的是， Ubuntu 26.04 的桌面环境不再使用 x11，所以国内的什么向日葵之类的远程控制都不能使用。<br>我之前很喜欢用的远程控制<code>RayLink</code>。考虑到我还在<code>RayLink</code>充了288的会员，我捏着鼻子在 Ubuntu 上安装 x11 的桌面环境：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Xfce 安装后，可以远程连接并看见 Ubuntu 26 的画面，但是无法进行控制。我没有进一步排查原因就卸载了。</span><br><span class="line">MATE 安装后，可以进行远程控制。</span><br></pre></td></tr></table></figure>
+<p>因此，当我需要远程控制时，我就切换并使用 MATE 桌面环境。</p>
+<p>可惜，日子不会这么美好的继续下去：我发现我的系统不会熄屏了。不管怎么排查问题，都没有找到原因。（这里我回顾问题，很有可能是多个桌面环境有不同的熄屏&#x2F;锁屏逻辑，功能配置互相干扰）<br>这迫使我重装了 Ubuntu 26 系统。</p>
+<p>重装系统了之后，我就主打 Tailscale 内网穿透，并配置微林 10块钱一个月的 DERP 服务器来加速远程连接、提高稳定性。<br>然后，主要使用系统自带的远程连接，备用 NoMachine 进行兜底。</p>
+<p>最后这部分再多说一嘴，Ubuntu 26 里先安装 <code>扩展管理器</code>，再在里面搜索 <code>Allow Locked Remote Desktop</code> 插件来确保锁屏的情况下依旧可以远程登录。我看了<a target="_blank" rel="noopener" href="https://github.com/jikamens/allow-locked-remote-desktop/">这个插件的Github</a>，里面的 metadata.json 文件里说是支持 Ubuntu 26 的 GNOME 50。我也没有自己关了这个插件实践试一下能不能锁屏远程登录，总之有总比没有好:)。</p>
+<h2 id="AI-软件与显存内存的分配"><a href="#AI-软件与显存内存的分配" class="headerlink" title="AI 软件与显存内存的分配"></a>AI 软件与显存内存的分配</h2><p>首先，有人专门汇总了 AMD 这款芯片的迷你主机工具箱环境：<code>https://strix-halo-toolboxes.com</code>。里面 LLM 和 comfyUI 都有。LLM 里面的 GitHub 也有提到具体的 Ubuntu 下的显存极致分配的教程。</p>
+<h3 id="AI-软件"><a href="#AI-软件" class="headerlink" title="AI 软件"></a>AI 软件</h3><p>其实就是加了个 –name 和 –home。不加的话 –name，切换到 distrobox 容器里面没有标识符提示。不加 –home，那就是默认是你登录用户的 ~ 目录。<br>基本参照上面的教程即可。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">distrobox create \</span><br><span class="line">  --name llama-rocm-7.2.1 \</span><br><span class="line">  --home ~/distrobox/llama-rocm-7.2.1 \</span><br><span class="line">  --image docker.io/kyuz0/amd-strix-halo-toolboxes:rocm-7.2.1 \</span><br><span class="line">  -- --device /dev/dri --device /dev/kfd \</span><br><span class="line">  --group-add video --group-add render --group-add sudo --security-opt seccomp=unconfined</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="GTT-动态显存"><a href="#GTT-动态显存" class="headerlink" title="GTT 动态显存"></a>GTT 动态显存</h3><p>因为我需要考虑到日常使用，我就不玩的那么极端。<br>我一开始，也是按照<a target="_blank" rel="noopener" href="https://github.com/technigmaai/technigmaai-wiki/wiki/AMD-Ryzen-AI-Max--395:-GTT--Memory-Step%E2%80%90by%E2%80%90Step-Instructions-%28Ubuntu-24.04%29">这篇教程</a>，在 BIOS 里将显存分配成为 512MB（即保留 512MB 的最小显存）。<br>考虑到我还需要运行桌面环境，可能还需要打开若干个浏览器页面。我最终决定预览 20G 内存给系统，其它的允许动态分配给显存来允许大模型。<br>所以自己计算一下，我可以动态分配的显存大小是：128G - 20G &#x3D; 108G。<br>考虑到内存页面大小是4k，所以：<code>(108*1024*1024)/4=28311552</code>。<br>按照教程那样，只不过数值改成我自己需要的数值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/default/grub</span><br><span class="line"># 编辑 GRUB_CMDLINE_LINUX_DEFAULT 这一行</span><br><span class="line">GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet splash amdgpu.gttsize=110592 ttm.pages_limit=28311552 amd_iommu=off&quot;</span><br></pre></td></tr></table></figure>
+
+<p>只不过，实际的使用过程中，我发现浏览器在观看视频时，会出现整个系统卡死的情况。<br>所以我在那次重装 Ubuntu 26 系统的时候，我在 BIOS 里将显存分配成为 1GB。<br>我自己测试了一下，桌面环境开了几个网页+观看 1080p 的60帧直播，GPU 的显存占用在 800MB 左右。并且后续也的确没有出现整个系统卡死的情况。<br>我怀疑是某些视频只能软件解码额外消耗了显存，然后浏览器没有正确的使用 GTT 动态显存的机制导致系统卡死。但是还是那句话，我也没有自己重新调回去实践排查问题。所以我在这里多记录了一下，没准真的是这个原因呢？多划分 512M 显存也不碍事。</p>
+<h3 id="AI-模型"><a href="#AI-模型" class="headerlink" title="AI 模型"></a>AI 模型</h3><p>最后，多说一嘴我使用的模型。<br>我原本是使用<code>Qwen3-Coder-Next-UD-Q4_K_XL.gguf</code>来完成编码工作。<br>体验过强化思考能力版本的<code>RYS-Qwen3.5-27B-FP8-XL-Q8_0.gguf</code>，与模仿 Claude-4.6-Opus 思维链的<code>Qwopus3.5-27B-v3-Q8_0.gguf</code>，但是说实话太慢了，可以说一个小修改都要10分钟起步。<br>所以 Qwen3.6-35B-A3B 发布之后，我就立刻切换到 <code>Qwen3.6-35B-A3B-UD-Q8_K_XL.gguf</code>。<br>我是以路由模式+配置文件的方式运行的 <code>llama-server</code>，可以参考我 Qwen3.6-35B-A3B 的配置文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[Qwen3.6-35B-A3B]</span><br><span class="line">model = /home/用户名/models/Qwen3.6/Qwen3.6-35B-A3B-UD-Q8_K_XL.gguf</span><br><span class="line">mmproj = /home/用户名/models/Qwen3.6/mmproj-F16.gguf</span><br><span class="line">ctx-size = 133120</span><br><span class="line">temperature = 0.6</span><br><span class="line">top-p = 0.95</span><br><span class="line">top-k = 20</span><br><span class="line">presence-penalty = 0.0</span><br><span class="line">repeat-penalty = 1.0</span><br><span class="line">chat-template-kwargs = &#123;&quot;preserve_thinking&quot;: true&#125;</span><br></pre></td></tr></table></figure>
+<p>再通过 ZeroNews 暴露端口给我公司的电脑使用，我现在付费模型（token）+本地模型的组合来完成工作，总算是感觉比较舒适了。<br>你说我为什么不买 code plan？和我的 http 429 说去吧。</p>
+<p>我自己也在 comfyUI 下测试了一下生成图片的性能。<br>strix-halo-comfyui 工具箱默认会加上 <code>--cache-none</code> 作为启动参数，每次生成完成图片之后都会释放显存里面的模型。<br>我取消掉这个启动参数，每次生成图片后保留模型在显存里，以便测试出扣去加载时间的真实显卡生图性能。<br>结果是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">运行 Klein-9B 蒸馏模型工作流，4步生成 1024x1024 的图片，大约 220+ 秒。</span><br><span class="line">Qwen-image 使用 4步 LoRA 生成 1024x1024 图片的话，大约 25+ 秒。</span><br><span class="line">Qwen-image-edit 使用 4步 LoRA 编辑 1024x1024 图片，大约 70+ 秒。</span><br><span class="line">Z-Image-Turbo 使用 comfyUI 官方模板的工作流，大约 10+秒。</span><br></pre></td></tr></table></figure>
+<p>我说实话，当 Klein-9B 的生成进度条半天没动的时候我已经两眼一黑了。但是后续模型特别是 Z-Image-Turbo 的表现有点亮眼:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">Requested to load ZImageTEModel_</span><br><span class="line">loaded completely;  7672.25 MB loaded, full load: True</span><br><span class="line">CLIP/text encoder model load device: cuda:0, offload device: cuda:0, current: cuda:0, dtype: torch.float16</span><br><span class="line">model weight dtype torch.bfloat16, manual cast: None</span><br><span class="line">model_type FLOW</span><br><span class="line">Requested to load Lumina2</span><br><span class="line">loaded completely;  11739.54 MB loaded, full load: True</span><br><span class="line">100%|█████████████████████████████████████████████| 4/4 [00:08&lt;00:00,  2.24s/it]</span><br><span class="line">Requested to load AutoencodingEngine</span><br><span class="line">loaded completely;  159.87 MB loaded, full load: True</span><br><span class="line">Prompt executed in 19.50 seconds</span><br><span class="line">Requested to load Lumina2</span><br><span class="line">loaded completely;  11739.54 MB loaded, full load: True</span><br><span class="line">100%|█████████████████████████████████████████████| 4/4 [00:08&lt;00:00,  2.22s/it]</span><br><span class="line">Requested to load AutoencodingEngine</span><br><span class="line">loaded completely;  159.87 MB loaded, full load: True</span><br><span class="line">Prompt executed in 9.95 seconds</span><br><span class="line">got prompt</span><br><span class="line">Requested to load Lumina2</span><br><span class="line">got prompt</span><br><span class="line">loaded completely;  11739.54 MB loaded, full load: True</span><br><span class="line">100%|█████████████████████████████████████████████| 4/4 [00:09&lt;00:00,  2.28s/it]</span><br><span class="line">Requested to load AutoencodingEngine</span><br><span class="line">loaded completely;  159.87 MB loaded, full load: True</span><br><span class="line">Prompt executed in 10.29 seconds</span><br><span class="line">Requested to load Lumina2</span><br><span class="line">loaded completely;  11739.54 MB loaded, full load: True</span><br><span class="line">100%|█████████████████████████████████████████████| 4/4 [00:09&lt;00:00,  2.27s/it]</span><br><span class="line">Requested to load AutoencodingEngine</span><br><span class="line">loaded completely;  159.87 MB loaded, full load: True</span><br><span class="line">Prompt executed in 10.21 seconds</span><br></pre></td></tr></table></figure>
+<p>冷加载之后，第二次之后的生成都在 10 秒，虽然说没有达到理论上的性能释放，但是对比 Klein-9B 只能说遥遥领先。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>4月23号 <code>Ubuntu 26.04</code> 就要正式发布了，我也是终于赶在发布之前将我的 <code>Ubuntu 26.04 beta</code> 折腾记录写完了。<br>好歹也没算过了保质期吧。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2026/02/10/uniapp-nvue-short-video/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -254,7 +339,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2025-12-29 10:34:49 / 修改时间：12:28:59" itemprop="dateCreated datePublished" datetime="2025-12-29T10:34:49+08:00">2025-12-29</time>
+              <time title="创建时间：2025-12-29 10:34:49 / 修改时间：12:28:58" itemprop="dateCreated datePublished" datetime="2025-12-29T10:34:49+08:00">2025-12-29</time>
             </span>
 
           
@@ -330,7 +415,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-10-05 20:31:11 / 修改时间：23:11:51" itemprop="dateCreated datePublished" datetime="2024-10-05T20:31:11+08:00">2024-10-05</time>
+              <time title="创建时间：2024-10-05 20:31:11 / 修改时间：23:11:50" itemprop="dateCreated datePublished" datetime="2024-10-05T20:31:11+08:00">2024-10-05</time>
             </span>
 
           
@@ -473,7 +558,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2024-06-30 10:58:45 / 修改时间：22:14:39" itemprop="dateCreated datePublished" datetime="2024-06-30T10:58:45+08:00">2024-06-30</time>
+              <time title="创建时间：2024-06-30 10:58:45 / 修改时间：22:14:38" itemprop="dateCreated datePublished" datetime="2024-06-30T10:58:45+08:00">2024-06-30</time>
             </span>
 
           
@@ -568,7 +653,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2023-08-28 19:03:41 / 修改时间：19:10:45" itemprop="dateCreated datePublished" datetime="2023-08-28T19:03:41+08:00">2023-08-28</time>
+              <time title="创建时间：2023-08-28 19:03:41 / 修改时间：19:10:44" itemprop="dateCreated datePublished" datetime="2023-08-28T19:03:41+08:00">2023-08-28</time>
             </span>
 
           
@@ -805,14 +890,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
